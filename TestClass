@@ -1,0 +1,76 @@
+@isTest
+public class RevenueRecoginitionDataTableControl_Test {
+    @IsTest
+    public static void testInvoiceDateAndInvoiceAmountMethod(){
+        Test.startTest();
+        Account acc = New Account();
+        acc.Name = 'Account Test 001';
+        acc.Payment_Terms__c = 123;
+        acc.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Sales Accounts').getRecordTypeId();
+        insert acc;
+        
+        List<Opportunity> oppList = New List<Opportunity>();
+        Map<Id,Opportunity> OldOppMap = New Map<Id,Opportunity>();
+        Opportunity opp = New Opportunity();
+        opp.Term__c = 12;
+        opp.AccountId = acc.Id;
+        opp.Billing_Frequency__c = 3;
+        opp.Amount = 1000;
+        opp.Contract_Start_Date__c = System.Today();
+        opp.RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('New Business').getRecordTypeId();
+        opp.CloseDate = System.Today();
+        opp.StageName = 'Qualified';
+        opp.First_Billing_Date__c = System.Today().AddDays(220);
+        insert opp;
+        oppList.add(opp);
+        
+        opp.First_Billing_Date__c = System.Today().AddDays(-20);
+        update opp;
+        OldOppMap.put(opp.Id,opp);
+        
+        Opportunity opp2 = New Opportunity();
+        opp2.Term__c = 10;
+        opp2.AccountId = acc.Id;
+        opp2.Billing_Frequency__c = 2;
+        opp2.Amount = 5000;
+        opp2.RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('New Business').getRecordTypeId();
+        opp2.CloseDate = System.Today().AddDays(420);
+        opp2.Contract_Start_Date__c = System.Today().AddDays(220);
+        opp2.StageName = 'Qualified';
+        opp2.First_Billing_Date__c = System.Today();
+        insert opp2;
+        oppList.add(opp2);
+        
+        opp2.First_Billing_Date__c = System.Today().AddDays(20);
+        update opp2;
+        OldOppMap.put(opp2.Id,opp2);
+        
+        Revenue_Recognition__c rr = New Revenue_Recognition__c();
+        rr.Opportunity__c = opp.Id;
+        rr.Date__c = System.Today().AddDays(640);
+        rr.Amount__c = 1000;
+        insert rr;
+        
+        Revenue_Recognition__c rr2 = New Revenue_Recognition__c();
+        rr2.Opportunity__c = opp.Id;
+        rr2.Date__c = System.Today().AddDays(640);
+        rr2.Amount__c = Null;
+        insert rr2;
+        
+        Revenue_Recognition__c rr3 = New Revenue_Recognition__c();
+        rr3.Opportunity__c = opp2.Id;
+        rr3.Date__c = System.Today().AddDays(640);
+        rr3.Amount__c = Null;
+        insert rr3;
+        
+        
+        RevenueRecoginitionDataTableController.getRevenueRecoginitionList(opp.Id);
+        RevenueRecoginitionDataTableController.getOpportunityRecord(opp.Id);
+        try{
+            RevenueRecoginitionDataTableController.createRevenueRecognition(rr);
+        }catch(Exception ex){
+            
+        }
+        Test.StopTest();
+    }
+}
