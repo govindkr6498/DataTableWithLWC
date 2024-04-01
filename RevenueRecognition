@@ -1,0 +1,14 @@
+Amount	Amount__c	Currency(16, 2)		False	
+Created By	CreatedById	Lookup(User)		False	
+Date	Date__c	Date		False	
+Expected Payment Cashflow	Expected_Payment_Cashflow__c	Currency(16, 2)		False	
+Expected Payment Date	Expected_Payment_Date__c	Date		False	
+Invoice Amount	Invoice_Amount__c	Currency(16, 2)		False	
+Invoice Date	Invoice_Date__c	Date		False	
+Invoice Number	Invoice_Number__c	Text(255)		False	
+Last Modified By	LastModifiedById	Lookup(User)		False	
+Notes	Notes__c	Text Area(255)		False	
+Opportunity	Opportunity__c	Master-Detail(Opportunity)		True	
+Revenue Recognition by Probability	Revenue_Recognition_by_Probability__c	Formula (Currency)		False	
+Revenue Recognition Name	Name	Auto Number		True	
+Status	Status__c	Picklist
