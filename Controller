@@ -1,0 +1,25 @@
+
+public class RevenueRecoginitionDataTableController {
+    @AuraEnabled(cacheable=true)
+    public static List<Revenue_Recognition__c> getRevenueRecoginitionList(String oppId) {
+        return  [SELECT Id,Amount__c,Status__c,Date__c,Opportunity__c,Name,Invoice_Date__c,Invoice_Amount__c,Expected_Payment_Date__c,Expected_Payment_Cashflow__c FROM Revenue_Recognition__c WHERE Opportunity__c =: oppId ORDER BY Date__c ASC];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static List<Opportunity> getOpportunityRecord(String oppId) {
+        return  [SELECT id,Name,Amount,Revenue_Recognition_Amount__c FROM Opportunity WHERE Id =: oppId ];
+    }
+    
+    @AuraEnabled
+    public static Revenue_Recognition__c createRevenueRecognition(Revenue_Recognition__c rRevenueRecord){
+        try{ 
+            insert rRevenueRecord;
+            System.debug('rRevenueRecord -->'+rRevenueRecord);
+            return rRevenueRecord;
+        }
+        catch(Exception ex){
+            throw new AuraHandledException(ex.getMessage());
+        }
+        
+    }
+}
