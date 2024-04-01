@@ -1,0 +1,239 @@
+import { LightningElement, wire, api, track } from "lwc";
+import getRevenueRecognition from "@salesforce/apex/RevenueRecoginitionDataTableController.getRevenueRecoginitionList";
+import getOpportunityRecord from "@salesforce/apex/RevenueRecoginitionDataTableController.getOpportunityRecord";
+import { refreshApex } from "@salesforce/apex";
+import { updateRecord } from "lightning/uiRecordApi";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import createRevenueRecognition from '@salesforce/apex/RevenueRecoginitionDataTableController.createRevenueRecognition';
+import { NavigationMixin } from 'lightning/navigation';
+const COLS = [
+  { label: 'Revenue Recognition Name', fieldName: 'Name', type: 'text', },
+  { label: 'Date', fieldName: 'Date__c', type: 'date-local', editable: true, typeAttributes: { day: '2-digit', month: '2-digit', year: 'numeric'}, cellAttributes: { alignment: 'Center' }, },
+  { label: 'Amount', fieldName: 'Amount__c', type: 'currency', editable: true, }, 
+  { label: 'STATUS', fieldName: 'Status__c', type: 'text', editable: true, },
+  { label: 'Invoice Date', fieldName: 'Invoice_Date__c', type: 'date-local', editable: true, typeAttributes: { day: '2-digit', month: '2-digit', year: 'numeric' }, cellAttributes: { alignment: 'Center' }, },
+  { label: 'Invoice Amount', fieldName: 'Invoice_Amount__c', type: 'currency', editable: true, }, 
+   { label: 'Expected Payment Date', fieldName: 'Expected_Payment_Date__c', type: 'date-local',  typeAttributes: { day: '2-digit', month: '2-digit', year: 'numeric'}, cellAttributes: { alignment: 'Center' },editable: true, },
+  { label: 'Expected Payment Cashflow', fieldName: 'Expected_Payment_Cashflow__c', type: 'currency',editable: true,  }, 
+];
+export default class RevenueRecoginitionDataTable extends LightningElement {
+  @api recordId;
+  columns = COLS;
+  draftValues = [];
+  oppAmount;
+  @track oppObjName;
+  refreshedRevenueRecognitionData = [];
+  refreshedOppData = [];
+  revenueRecoginitionDataTable;
+  opportunityDataTable;
+  revenueRecoginitionIdAmountMap = [];
+  opportunityIdAmountMap = [];
+  totalAmount = 0;
+  @track oppAmountError = '';
+  @track revenueRecognitionAmountError = '';
+  @track revenueRecognitionDateError = '';
+  @track revenueRecognitionStatusError = '';
+  @wire(getRevenueRecognition, { oppId: "$recordId" })
+  contacts(result) {
+    this.refreshedRevenueRecognitionData = result;
+    if (result.data) {
+      this.revenueRecoginitionDataTable = result.data;
+      var myMap1 = new Map();
+      this.revenueRecoginitionDataTable.forEach(opportunity => {
+        myMap1.set(opportunity.Id, opportunity.Amount__c);
+      });
+      this.revenueRecoginitionIdAmountMap = myMap1;
+      this.totalAmount = Array.from(this.revenueRecoginitionIdAmountMap.values()).reduce((sum, Amount__c) => sum + Amount__c, 0);
+      console.log('this.totalAmount --> ', this.totalAmount);
+      console.log('this.revenueRecoginitionIdAmountMap --> ', this.revenueRecoginitionIdAmountMap);
+    } else if (result.error) {
+      this.error = error;
+    }
+  }
+
+
+  totalOpportunityAmount = 0;
+  @wire(getOpportunityRecord, { oppId: "$recordId" })
+  Opporunities(result) {
+    this.refreshedOppData = result;
+    if (result.data) {
+      this.opportunityDataTable = result.data;
+      var myMap1 = new Map();
+      this.opportunityDataTable.forEach(opportunity => {
+        myMap1.set(opportunity.Id, opportunity.Amount);
+      });
+      this.opportunityIdAmountMap = myMap1;
+      this.totalOpportunityAmount = Array.from(this.opportunityIdAmountMap.values()).reduce((sum, Amount) => sum + Amount, 0);
+      console.log('this.totalOpportunityAmount--> ', this.totalOpportunityAmount);
+      console.log('this.opportunityIdAmountMap Opp--> ', this.opportunityIdAmountMap);
+    } else if (result.error) {
+      this.error = error;
+    }
+  }
+
+
+  async handleSave(event) {
+    this.revenueRecoginitionIdAmountMap.set(event.detail.draftValues[0].Id, parseInt(event.detail.draftValues[0].Amount__c));
+    this.totalAmount = Array.from(this.revenueRecoginitionIdAmountMap.values()).reduce((sum, Amount__c) => sum + Amount__c, 0);
+    console.log(' this.revenueRecoginitionIdAmountMap  after 1->', this.revenueRecoginitionIdAmountMap);
+    let amountDifference = this.totalOpportunityAmount - this.totalAmount;
+    console.log('amountDifference :', amountDifference);
+    if (amountDifference < 0) {
+      this.oppAmountError = 'Total Revenue Recognition Amount will not greater than Opportunity Amount!...';
+    } else {
+      this.oppAmountError = "";
+
+      const records = event.detail.draftValues.slice().map((draftValue) => {
+        const fields = Object.assign({}, draftValue);
+        return { fields };
+      });
+
+      // Clear all datatable draft values
+      this.draftValues = [];
+
+      try {
+        // Update all records in parallel thanks to the UI API
+        const recordUpdatePromises = records.map((record) => updateRecord(record));
+        await Promise.all(recordUpdatePromises);
+
+        // Report success with a toast
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Success",
+            message: "Revenue Recognition Record updated",
+            variant: "success",
+          }),
+        );
+
+        // Display fresh data in the datatable
+        await refreshApex(this.refreshedOppData);
+        await refreshApex(this.refreshedRevenueRecognitionData);
+
+      } catch (error) {
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Error updating or reloading contacts",
+            message: error.body.message,
+            variant: "error",
+          }),
+        );
+      }
+    }
+  }
+  @track amount;
+  @track date;
+  @track Status__c;
+  @track isModalOpen = false;
+  @track oppRecordId
+  @track oppmountError = '';
+
+  picklistOptions = [
+    { label: 'Future', value: 'Future' },
+    { label: 'Recognised', value: 'Recognised' },
+    { label: 'Void', value: 'Void' }
+  ];
+  handlePicklistChange(event) {
+    this.rec.Status__c = event.detail.value;
+    console.log('this.rec.Status__c --> ', this.rec.Status__c);
+  }
+
+  rec = {
+    Amount__c: this.amount,
+    Date__c: this.date,
+    Status__c: this.Status__c,
+    Opportunity__c: this.oppRecordId //this.recordId
+  }
+
+  handleAmountChange(event) {
+    this.rec.Opportunity__c = this.recordId;
+    console.log('this.rec.Opportunity__c ->', this.rec.Opportunity__c, '  this.recordId  ', this.recordId, '  "$recordId" -->  ', "$recordId");
+    this.rec.Amount__c = event.target.value;
+    // console.log("Amount", this.rec.Amount__c);
+  }
+
+  handleDateChange(event) {
+    this.rec.Date__c = event.target.value;
+    console.log("Date", this.rec.Date__c);
+  }
+
+  // handleStatusChange(event) {
+  //   this.rec.Status__c = event.target.value;
+  //   console.log("status", this.rec.Status__c);
+  // }
+
+  @track totalRevenueRecognitionAmountOnInsert;
+  @track differenceOppAmountAndRevenueRecogAmount = 0;
+  handleClick() {
+    console.log("rec.Amount__c ", this.rec.Amount__c);
+    console.log("this.totalAmount ", this.totalAmount);
+    console.log("this.totalOpportunityAmount", this.totalOpportunityAmount);
+    console.log('this.totalOpportunityAmount ', this.totalOpportunityAmount - this.totalAmount);
+    console.log('this.Diiffenece ', parseInt(this.totalOpportunityAmount) - (parseInt(this.rec.Amount__c) + parseInt(this.totalAmount)));
+    console.log('this.amount+this.totalAmount --?>', this.rec.Amount__c + this.totalAmount);
+    // Validate Amount
+    if (!this.rec.Amount__c) {
+      this.revenueRecognitionAmountError = 'Please Insert Amount Record!...';
+    } else if (parseInt(this.totalOpportunityAmount) - (parseInt(this.rec.Amount__c) + parseInt(this.totalAmount)) < 0) {
+      this.revenueRecognitionAmountError = 'Total Revenue Recognition Amount will not greater than Opportunity Amount. You can insert less than ' + (parseInt(this.totalOpportunityAmount) - parseInt(this.totalAmount));
+    }
+    else {
+      this.revenueRecognitionAmountError = '';
+    }
+    if (!this.rec.Date__c) {
+      this.revenueRecognitionDateError = 'Please Insert Date Field!...';
+    } else {
+      this.revenueRecognitionDateError = '';
+    }
+    if (!this.rec.Status__c) {
+      this.revenueRecognitionStatusError = 'Please Insert Status Field!...';
+    } else {
+      this.revenueRecognitionStatusError = '';
+    }
+    if (!this.revenueRecognitionAmountError && !this.revenueRecognitionDateError && !this.revenueRecognitionStatusError) {
+      console.log("this.oppRecordId --> ", this.oppRecordId, '  this.recordId -> ', this.recordId);
+      createRevenueRecognition({ rRevenueRecord: this.rec })
+        .then(result => {
+          this.message = result;
+          this.error = undefined;
+          if (this.message !== undefined) {
+            this.rec.Amount__c = '';
+            this.rec.Date__c = '';
+            this.rec.Status__c = '';
+            // this.rec.Opportunity__c = '';
+            this.dispatchEvent(
+              new ShowToastEvent({
+                title: 'Success',
+                message: 'RevenueRecognition created Succesfully',
+                variant: 'success',
+              }),
+            );
+          }
+
+          console.log(JSON.stringify(result));
+          console.log("result", this.message);
+          this.isModalOpen = false;
+
+        })
+        .catch(error => {
+          this.message = undefined;
+          this.error = error;
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: 'Failed to Insert record',
+              message: error.body.message,
+              variant: 'error',
+            }),
+          );
+          console.log("error", JSON.stringify(this.error));
+        });
+    }
+  }
+  OpenModalhandleClick() {
+    this.isModalOpen = true;
+  }
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+
+}
