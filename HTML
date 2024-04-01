@@ -1,0 +1,62 @@
+<!-- apexContactsForAccount.html -->
+<template>
+	<lightning-card title="Record Recognition" icon-name="custom:custom63">
+
+		<div class="slds-m-around_medium">
+			<template lwc:if={revenueRecoginitionDataTable}>
+				<lightning-datatable key-field="Id" data={revenueRecoginitionDataTable} columns={columns}
+					onsave={handleSave} draft-values={draftValues} >
+				</lightning-datatable>
+				<div class="error" style="color:red; margin-left: 18%">{oppAmountError}</div>
+				<div class="slds-text-align_right" style="margin-top:5px;">
+					<lightning-button variant="brand" label="New" title="titleName" onclick={OpenModalhandleClick}>
+					</lightning-button>
+		</div>
+</template>
+<!-- <template lwc:if={contacts.error}> -->
+<!-- Handle Apex error -->
+<!-- </template> -->
+</div>
+
+<template if:true={opportunityDataTable}>
+	<template for:each={opportunityDataTable} for:item="acc">
+		<p key={acc.Id} style="margin-left: 30%;"> Total Opportunity Amount is : {acc.Amount}</p>
+		<p key={acc.Id} style="margin-left: 30%;"> Total Record Recogination Amount is :
+			{acc.Revenue_Recognition_Amount__c}</p>
+	</template>
+</template>
+</lightning-card>
+<template if:true={isModalOpen}>
+	<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+		aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+		<div class="slds-modal__container">
+			<header class="slds-modal__header">
+				<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Revenue Recognition
+					Record</h2>
+			</header>
+			<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+				<div class="slds-p-around_medium">
+					<div class="slds-p-around_x-small">
+						<lightning-input label="Amount" value={rec.Amount} onchange={handleAmountChange}>
+						</lightning-input>
+						<div class="error" style="color:red">{revenueRecognitionAmountError}</div>
+						<lightning-input label="Date" value={rec.Date} onchange={handleDateChange} type="Date">
+						</lightning-input>
+						<div class="error" style="color:red">{revenueRecognitionDateError}</div>
+						<lightning-combobox label="Industry" value={rec.Status__c} options={picklistOptions}
+							onchange={handlePicklistChange}>
+						</lightning-combobox>
+						<div class="error" style="color:red">{revenueRecognitionStatusError}</div><br/>
+        </div>
+					</div>
+				</div>
+				<footer class="slds-modal__footer">
+					<lightning-button label="Cancel" onclick={closeModal} style="padding:5px;"></lightning-button>
+					<lightning-button label="Save" onclick={handleClick} variant="brand"></lightning-button>
+				</footer>
+			</div>
+	</section>
+	<div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+
+</template>
