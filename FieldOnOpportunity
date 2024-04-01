@@ -1,0 +1,79 @@
+12 Month Rev Total	X12_Month_Rev_Total__c	Formula (Currency)		False	
+Account Name	AccountId	Lookup(Account)		True	
+Alternative Data Providers	Sales_Current_Data_inputs__c	Picklist (Multi-Select)		False	
+Amount	Amount	Currency(16, 2)		False	
+ARR Year 1	ARR_Year_1__c	Currency(18, 0)		False	
+ARR Year 2	ARR_Year_2__c	Currency(18, 0)		False	
+Asset Classes	Sales_Asset_Classes__c	Picklist (Multi-Select)		False	
+Billing Frequency (every x months)	Billing_Frequency__c	Number(18, 0)		False	
+Break Cause Length	Break_Cause_Length__c	Number(18, 0)		False	
+Budget Confirmed	Budget_Confirmed__c	Checkbox		False	
+Budget Cycle	Sales_Budget_Cycle__c	Picklist		False	
+Check Contract	Check_Contract__c	Checkbox		False	
+Christmas Campaign	Christmas_Campaign__c	Checkbox		False	
+Close Date	CloseDate	Date		True	
+Closed Month	Close_Month__c	Formula (Text)		False	
+Closed Won	Closed_Won__c	Checkbox		False	
+Company Type Focus	Sales_Company_Type_Focus__c	Picklist (Multi-Select)		False	
+Competitor	Competitor__c	Lookup(Account)		True	
+Contract	ContractId	Lookup(Contract)		True	
+Contract Length	Contract_Length__c	Number(18, 0)		False	
+Contract Start Date	Contract_Start_Date__c	Date		False	
+Contract Value	Contract_Value__c	Currency(18, 0)		False	
+Country Focus	Sales_Country_Focus__c	Picklist (Multi-Select)		False	
+Created By	CreatedById	Lookup(User)		False	
+Days at Stage	Days_at_Stage__c	Formula (Number)		False	
+Decision Makers	Sales_Decision_Makers__c	Long Text Area(32768)		False	
+Description	Description	Long Text Area(32000)		False	
+Discovery Completed	Discovery_Completed__c	Checkbox		False	
+Email	Email__c	Formula (Text)		False	
+Expected Revenue	ExpectedRevenue	Currency(16, 2)		False	
+First Billing Date	First_Billing_Date__c	Date		False	
+First Invoice Amount	First_Invoice_Amount__c	Currency(16, 2)		False	
+Focus Funds	Sales_Focus_Funds__c	Text Area(255)		False	
+Forecast Category	ForecastCategoryName	Picklist		False	
+Forecasted Contract Length	Forecasted_Contract_Length__c	Number(18, 0)		False	
+Fundpath Product Interest	Sales_Fundpath_Product_Interest__c	Picklist (Multi-Select)		False	
+Guranteed Contract Value	Guranteed_Contract_Value__c	Currency(18, 0)		False	
+Hurdles to Sale	Sales_Hurdles_to_Sale__c	Picklist (Multi-Select)		False	
+Invoice Amount	Invoice_Amount__c	Formula (Currency)		False	
+Last Modified By	LastModifiedById	Lookup(User)		False	
+Lead Source	LeadSource	Picklist		False	
+LinkedIn Company Id	LID__LinkedIn_Company_Id__c	Text(80)		False	
+Loss Reason	Loss_Reason__c	Picklist		False	
+Loss Reason (Other)	Loss_Reason_Other__c	Text(255)		False	
+Next Step	NextStep	Text(255)		False	
+Number of Go Licenses	Number_of_Go_Licenses__c	Roll-Up Summary (SUM Opportunity Product)		False	
+Number of Pro Licenses	Number_of_Pro_Licenses__c	Roll-Up Summary (SUM Opportunity Product)		False	
+Opportunity Name	Name	Text(120)		True	
+Opportunity Owner	OwnerId	Lookup(User)		True	
+Opportunity Record Type	RecordTypeId	Record Type		True	
+Opportunity Score	IqScore	Number(9, 0)		False	
+Package Type	Package_Type__c	Picklist		False	
+PO Number	PO_Number__c	Text(255)		False	
+Potential Users	Potential_Users__c	Number(18, 0)		False	
+Price Book	Pricebook2Id	Lookup(Price Book)		True	
+Primary Campaign Source	CampaignId	Lookup(Campaign)		True	
+Priority	Priority__c	Formula (Text)		False	
+Private	IsPrivate	Checkbox		False	
+Probability (%)	Probability	Percent(3, 0)		False	
+Quantity	TotalOpportunityQuantity	Number(16, 2)		False	
+Revenue Recognition Amount	Revenue_Recognition_Amount__c	Roll-Up Summary (SUM Revenue Recognition)		False	
+ROI Analysis Completed	ROI_Analysis_Completed__c	Checkbox		False	
+Signatory	SignatoryLU__c	Lookup(Contact)		True	
+Signatory (deprecated)	Signatory__c	Text(255)		False	
+Stage	StageName	Picklist		False	
+Stage Date Changed	Stage_Date_Changed__c	Date		False	
+Standard Invoice Amount	Standard_Invoice_Amount__c	Currency(16, 2)		False	
+Status	Status__c	Formula (Text)		False	
+Synced Quote	SyncedQuoteId	Lookup(Quote)		False	
+Term	Term__c	Number(18, 0)		False	
+Top Quartile Fund 1 - Asset Class	Top_Quartile_Fund_1_Asset_Class__c	Formula (Text)		False	
+Top Quartile Fund 2 - Asset Class	Top_Quartile_Fund_2_Asset_Class__c	Formula (Text)		False	
+Top Quartile Fund 3 - Asset Class	Top_Quartile_Fund_3_Asset_Class__c	Formula (Text)		False	
+Top Quartile Funds 1	Top_Quartile_Funds_1__c	Formula (Text)		False	
+Top Quartile Funds 2	Top_Quartile_Funds_2__c	Formula (Text)		False	
+Top Quartile Funds 3	Top_Quartile_Funds_3__c	Formula (Text)		False	
+Type	Type	Picklist		False	
+Value of Go Licenses	Value_of_Go_Licenses__c	Roll-Up Summary (SUM Opportunity Product)		False	
+Value of Pro Licenses	Value_of_Pro_Licenses__c	Roll-Up Summary (SUM Opportunity Product)	
